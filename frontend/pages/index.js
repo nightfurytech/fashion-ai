@@ -5,21 +5,30 @@ export default function Home() {
     const [event, setEvent] = useState("Office");
     const [response, setResponse] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [loading, setLoading] = useState(false);  // ✅ new loading state
 
     const handleSubmit = async () => {
         if (!file) return alert("Please select an image first!");
+
+        setLoading(true);   // ✅ show analyzing
+        setResponse(null);  // ✅ reset previous output
 
         const formData = new FormData();
         formData.append("image", file);
         formData.append("event_type", event);
 
-        const res = await fetch("http://127.0.0.1:5000/analyze-outfit/", {
-            method: "POST",
-            body: formData
-        });
-
-        const data = await res.json();
-        setResponse(data.feedback);
+        try {
+            const res = await fetch("http://127.0.0.1:5000/analyze-outfit/", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            setResponse(data.feedback);
+        } catch (err) {
+            alert("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleFileChange = (e) => {
@@ -94,6 +103,7 @@ export default function Home() {
 
                 <button
                     onClick={handleSubmit}
+                    disabled={loading}
                     style={{
                         background: '#007bff',
                         color: '#fff',
@@ -102,11 +112,19 @@ export default function Home() {
                         borderRadius: '0.5rem',
                         fontWeight: 'bold',
                         width: '100%',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        opacity: loading ? 0.6 : 1
                     }}
                 >
-                    Submit
+                    {loading ? "Analyzing..." : "Submit"}
                 </button>
+
+                {/* Show loading message or response */}
+                {loading && (
+                    <p style={{ marginTop: '1.5rem', color: '#666' }}>
+                        Analyzing your outfit...
+                    </p>
+                )}
 
                 {response && (
                     <div style={{ marginTop: '1.5rem', textAlign: 'left' }}>
