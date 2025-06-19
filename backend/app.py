@@ -1,10 +1,14 @@
+import os
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import base64
+import openai
 
 app = Flask(__name__)
 CORS(app)
+
+openai.api_key = os.getenv('OPENAI_API_KEY')
 
 @app.route('/analyze-outfit/', methods=['POST'])
 def analyze_outfit():
@@ -25,14 +29,25 @@ def analyze_outfit():
     3. Styling suggestions
     """
 
+    response = openai.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"}}
+                ]
+            }
+        ]
+    )
+
+    ai_response = response.choices[0].message.content
+
     # Placeholder response
     return jsonify({
         "event": event_type,
-        "feedback": {
-            "suitability": "✅ Yes, it's appropriate for the event.",
-            "color_rating": "🎨 Good balance of tones, slightly muted for a date night.",
-            "suggestions": "Consider adding a bright accessory or changing shoes to heels for a more striking look."
-        }
+        "feedback": ai_response
     })
 
 if __name__ == "__main__":
