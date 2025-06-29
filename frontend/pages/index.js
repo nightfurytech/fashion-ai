@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function Home() {
     const [file, setFile] = useState(null);
-    const [event, setEvent] = useState("Office");
+    const [event, setEvent] = useState("");
     const [response, setResponse] = useState(null);
     const [preview, setPreview] = useState(null);
     const [loading, setLoading] = useState(false);  // ✅ new loading state
@@ -18,7 +18,7 @@ export default function Home() {
         formData.append("event_type", event);
 
         try {
-            const res = await fetch("http://localhost:5001/analyze-outfit/", {
+            const res = await fetch("http://13.201.121.48:5001/analyze-outfit/", {
                 method: "POST",
                 body: formData
             });
@@ -84,22 +84,35 @@ export default function Home() {
                     )}
                 </div>
 
-                <select
-                    value={event}
-                    onChange={(e) => setEvent(e.target.value)}
-                    style={{
-                        marginBottom: '1rem',
-                        padding: '0.5rem',
-                        borderRadius: '0.5rem',
-                        width: '100%',
-                        border: '1px solid #ccc'
-                    }}
-                >
-                    <option>Office</option>
-                    <option>Date night</option>
-                    <option>Airport</option>
-                    <option>Corporate event</option>
-                </select>
+                <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
+                    <label
+                        htmlFor="eventInput"
+                        style={{
+                            display: 'block',
+                            marginBottom: '0.25rem',
+                            fontSize: '0.95rem',
+                            fontWeight: '600',
+                            color: '#333'
+                        }}
+                    >
+                        Define your event in less than 2 words
+                    </label>
+                    <input
+                        id="eventInput"
+                        type="text"
+                        value={event}
+                        onChange={(e) => setEvent(e.target.value)}
+                        placeholder="e.g. Office, Date night"
+                        style={{
+                            padding: '0.5rem',
+                            borderRadius: '0.5rem',
+                            width: '100%',
+                            border: '1px solid #ccc',
+                            fontSize: '0.95rem'
+                        }}
+                    />
+                </div>
+
 
                 <button
                     onClick={handleSubmit}

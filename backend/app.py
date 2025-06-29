@@ -4,7 +4,7 @@ import openai, base64, json, os, re
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:4000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "http://13.201.121.48:4000"}})
 
 UPLOAD_FOLDER = "./uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -23,6 +23,8 @@ def clean_text(text):
 def analyze_outfit():
     image = request.files['image']
     event_type = request.form['event_type']
+    if len(event_type) > 20:
+        return jsonify({"error": 'Please describe your event in less than 20 characters'}), 500
 
     filename = secure_filename(image.filename)
     filepath = os.path.join(UPLOAD_FOLDER, filename)

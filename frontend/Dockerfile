@@ -2,9 +2,13 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# Copy package.json and lock file if available
 COPY frontend/package*.json ./
-RUN npm install
 
+# Clean npm cache and install dependencies
+RUN npm cache clean --force && npm install
+
+# Copy rest of the frontend code
 COPY frontend .
 
 EXPOSE 3000

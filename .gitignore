@@ -1,3 +1,6 @@
 .idea/
 backend/uploads/
 .env
+frontend/.next
+frontend/node_modules
+frontend/.dockerignore
