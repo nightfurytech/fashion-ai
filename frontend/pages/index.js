@@ -18,7 +18,7 @@ export default function Home() {
         formData.append("event_type", event);
 
         try {
-            const res = await fetch("http://127.0.0.1:5000/analyze-outfit/", {
+            const res = await fetch("http://localhost:5001/analyze-outfit/", {
                 method: "POST",
                 body: formData
             });

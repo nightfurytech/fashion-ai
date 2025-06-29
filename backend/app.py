@@ -4,12 +4,13 @@ import openai, base64, json, os, re
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:4000"}}, supports_credentials=True)
 
 UPLOAD_FOLDER = "./uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-openai.api_key = os.getenv('OPENAI_API_KEY')
+
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def clean_text(text):
     # Remove 'json', '\n', and triple backticks
@@ -44,7 +45,7 @@ def analyze_outfit():
     """
 
     try:
-        response = openai.chat.completions.create(
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {
@@ -66,9 +67,9 @@ def analyze_outfit():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/")
+@app.route("/ping/", methods=["GET"])
 def serve_ui():
-    return send_from_directory("static", "index.html")
+    return jsonify({"hello": "world"}), 200
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
